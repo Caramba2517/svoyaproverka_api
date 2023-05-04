@@ -1,8 +1,9 @@
-import urllib.parse
-from datetime import datetime
 import json
 import os
 import psycopg2
+
+from decouple import config
+from datetime import datetime
 from psycopg2.errors import UniqueViolation, InFailedSqlTransaction
 
 db = psycopg2.connect(
@@ -79,7 +80,8 @@ for folder_name in folders:
         except KeyError:
             customer_name = 'Нет данных'
         try:
-            customer_inn = json_data[f'{folder_name}']['section_card_common_dict']['Информация о субъекте контроля']['ИНН']
+            customer_inn = json_data[f'{folder_name}']['section_card_common_dict']['Информация о субъекте контроля'][
+                'ИНН']
             print(customer_inn)
         except KeyError:
             customer_inn = 'Нет данных'
@@ -99,7 +101,8 @@ for folder_name in folders:
         except KeyError:
             justification = 'Статус еще не определён'
         try:
-            numb_purchase = json_data[f'{folder_name}']['section_card_common_dict']['Сведения о закупке']['Номер извещения']
+            numb_purchase = json_data[f'{folder_name}']['section_card_common_dict']['Сведения о закупке'][
+                'Номер извещения']
         except KeyError:
             numb_purchase = 'Нет данных'
         try:
