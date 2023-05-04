@@ -5,13 +5,6 @@ import os
 import psycopg2
 from psycopg2.errors import UniqueViolation, InFailedSqlTransaction
 
-db = psycopg2.connect(
-    host="89.108.118.100",
-    database="svoya_proverka_api",
-    user="postgres",
-    password="Golova123",
-    port="5432"
-)
 
 cur = db.cursor()
 data_folder = '/Users/caramba/Desktop/ALL_DATA'
