@@ -18,11 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from api.views import serve_file
 from svoyaproverka_api.yasg import urlpatterns as swagger_urls
+from api.views import redirect_to_api_v1
 
 urlpatterns = [
+    path('', redirect_to_api_v1),
     path('admin/', admin.site.urls),
     path('api/v1/', include('api.urls')),
-    path('<path:file_path>/', serve_file, name='serve_file')
+    path('file/<path:file_path>/', serve_file, name='serve_file')
 ]
 
 urlpatterns += swagger_urls

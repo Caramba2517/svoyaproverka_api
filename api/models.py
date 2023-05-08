@@ -13,7 +13,7 @@ class Complaint(models.Model):
     justification = models.TextField()
     numb_purchase = models.CharField(max_length=150)
     prescription = models.TextField(null=True, blank=True)
-    list_docs = models.FileField(null=True, blank=True)
+    list_docs = models.TextField(null=True, blank=True)
     json_data = models.JSONField()
 
     class Meta:

@@ -5,6 +5,12 @@ from api.serializers import ComplaintSerializer
 from api.filters import ComplaintFilter
 import os
 from django.http import FileResponse
+from django.shortcuts import redirect
+from rest_framework.pagination import LimitOffsetPagination
+
+
+def redirect_to_api_v1(request):
+    return redirect('http://89.108.118.100:8000/api/v1/complaints/?limit=10')
 
 
 def serve_file(request, file_path):
@@ -20,6 +26,9 @@ class ComplaintList(generics.ListAPIView):
     serializer_class = ComplaintSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = ComplaintFilter
+    pagination_class = LimitOffsetPagination
+    pagination_class.default_limit = 10
+    pagination_class.max_limit = 100
 
 
 class ComplaintDetail(generics.RetrieveAPIView):
