@@ -4,7 +4,6 @@ import psycopg2
 
 from decouple import config
 from datetime import datetime
-from psycopg2.errors import UniqueViolation, InFailedSqlTransaction
 
 db = psycopg2.connect(
     host=config("DB_HOST"),
@@ -19,7 +18,7 @@ data_folder = '/Users/caramba/Desktop/ALL_DATA'
 folders = os.listdir(data_folder)
 folder_num = 0
 for folder_name in folders:
-    if folder_name == '.DS_Store':
+    if folder_name in ['.DS_Store', 'docs', '.json']:
         pass
     else:
         try:
@@ -32,14 +31,14 @@ for folder_name in folders:
             print(e)
         try:
             list_docs_path = os.path.join(data_folder, folder_name, 'docs')
-            file_paths = []
+            file_paths = ""
             if len(os.listdir(list_docs_path)) == 0:
                 file_paths = 'Нет файлов'
             else:
                 for item in os.listdir(list_docs_path):
                     item_path = os.path.join(list_docs_path, item)
                     if os.path.isfile(item_path):
-                        file_paths.append(item_path)
+                        file_paths += f'{item_path};'
                 if len(file_paths) == 1:
                     file_paths = file_paths[0]
         except KeyError:
@@ -116,14 +115,12 @@ for folder_name in folders:
                         f"complainant_name, complainant_inn, justification, numb_purchase, prescription, list_docs, "
                         f"json_data)"
                         f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                        (complaint_id, status, date, region, customer_name, customer_inn, complainant_name,
+                        (complaint_id, status, date, region.upper(), customer_name, customer_inn, complainant_name,
                          complainant_inn, justification, numb_purchase, prescription, file_paths,
                          json.dumps(json_data)))
             db.commit()
             folder_num = folder_num + 1
             folder_amount = len(folders)
             print(f'\rInserted {folder_num} of {folder_amount} folders', end='')
-        except UniqueViolation:
-            print(f'\rFolder {folder_name} already exist!', end='')
-        except InFailedSqlTransaction:
+        except:
             print(f'\rFolder {folder_name} already exist!', end='')
