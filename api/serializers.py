@@ -18,5 +18,6 @@ class ComplaintSerializer(serializers.ModelSerializer):
         site_url = "http://89.108.118.100:8000/file"
         if obj.list_docs == empty_folder:
             return empty_folder
-        docs = obj.list_docs.split(";")
+        docs_str = obj.list_docs[:-1]
+        docs = docs_str.split(";")
         return [f"{site_url}{urllib.parse.quote(doc.strip())}" for doc in docs]

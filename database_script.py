@@ -4,6 +4,7 @@ import psycopg2
 
 from decouple import config
 from datetime import datetime
+from api.search_text import search_text_in_folder
 
 db = psycopg2.connect(
     host=config("DB_HOST"),
@@ -32,6 +33,7 @@ for folder_name in folders:
         try:
             list_docs_path = os.path.join(data_folder, folder_name, 'docs')
             file_paths = ""
+            file_content = ""
             if len(os.listdir(list_docs_path)) == 0:
                 file_paths = 'Нет файлов'
             else:
@@ -39,8 +41,11 @@ for folder_name in folders:
                     item_path = os.path.join(list_docs_path, item)
                     if os.path.isfile(item_path):
                         file_paths += f'{item_path};'
+                        content = search_text_in_folder(list_docs_path)
+                        file_content += f'{content};'
                 if len(file_paths) == 1:
                     file_paths = file_paths[0]
+                    file_content = search_text_in_folder(list_docs_path)
         except KeyError:
             file_paths = 'Нет файлов'
             file_content = ""
