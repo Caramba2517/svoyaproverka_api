@@ -10,7 +10,7 @@ class ComplaintSerializer(serializers.ModelSerializer):
         model = Complaint
         fields = [
             'complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name', 'complainant_inn',
-            'status', 'numb_purchase', 'justification', 'list_docs', 'json_data',
+            'status', 'numb_purchase', 'justification', 'list_docs', 'json_data'
         ]
 
     def get_list_docs(self, obj):

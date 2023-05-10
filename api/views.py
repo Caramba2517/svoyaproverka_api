@@ -1,5 +1,12 @@
+import requests
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
+from rest_framework.authentication import TokenAuthentication
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.authtoken.views import ObtainAuthToken
+from rest_framework.authtoken.models import Token
+from rest_framework.response import Response
+
 from api.models import Complaint
 from api.serializers import ComplaintSerializer
 from api.filters import ComplaintFilter
@@ -22,16 +29,29 @@ def serve_file(request, file_path):
 
 
 class ComplaintList(generics.ListAPIView):
+    #authentication_classes = [TokenAuthentication]
+    #permission_classes = [IsAuthenticated]
     queryset = Complaint.objects.all()
     serializer_class = ComplaintSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = ComplaintFilter
     pagination_class = LimitOffsetPagination
-    pagination_class.default_limit = 2
-    pagination_class.max_limit = 1000
+    pagination_class.default_limit = 10
+    pagination_class.max_limit = 100
 
 
 class ComplaintDetail(generics.RetrieveAPIView):
+    #authentication_classes = [TokenAuthentication]
+    #permission_classes = [IsAuthenticated]
     queryset = Complaint.objects.all()
     serializer_class = ComplaintSerializer
     lookup_field = 'pk'
+
+
+class CustomAuthToken(ObtainAuthToken):
+    def post(self, request, *args, **kwargs):
+        serializer = self.serializer_class(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        user = serializer.validated_data['user']
+        token, created = Token.objects.get_or_create(user=user)
+        return Response({'token': token.key})
