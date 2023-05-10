@@ -27,8 +27,8 @@ class ComplaintList(generics.ListAPIView):
     filter_backends = [DjangoFilterBackend]
     filterset_class = ComplaintFilter
     pagination_class = LimitOffsetPagination
-    pagination_class.default_limit = 10
-    pagination_class.max_limit = 100
+    pagination_class.default_limit = 2
+    pagination_class.max_limit = 1000
 
 
 class ComplaintDetail(generics.RetrieveAPIView):

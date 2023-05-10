@@ -8,7 +8,10 @@ class ComplaintSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Complaint
-        fields = '__all__'
+        fields = [
+            'complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name', 'complainant_inn',
+            'status', 'numb_purchase', 'justification', 'list_docs', 'json_data',
+        ]
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'

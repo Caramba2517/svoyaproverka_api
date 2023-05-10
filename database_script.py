@@ -14,7 +14,7 @@ db = psycopg2.connect(
 )
 
 cur = db.cursor()
-data_folder = '/Users/caramba/Desktop/ALL_DATA'
+data_folder = '/Parser/parser_jalob_/ALL_DATA'
 folders = os.listdir(data_folder)
 folder_num = 0
 for folder_name in folders:
@@ -43,6 +43,7 @@ for folder_name in folders:
                     file_paths = file_paths[0]
         except KeyError:
             file_paths = 'Нет файлов'
+            file_content = ""
         if "_" in str(folder_name):
             folder_name = folder_name.replace('_', '/')
         try:
@@ -113,14 +114,15 @@ for folder_name in folders:
         try:
             cur.execute(f"INSERT INTO api_complaint (complaint_id, status, date, region, customer_name, customer_inn, "
                         f"complainant_name, complainant_inn, justification, numb_purchase, prescription, list_docs, "
-                        f"json_data)"
-                        f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                        f"json_data, docs)"
+                        f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
                         (complaint_id, status, date, region.upper(), customer_name, customer_inn, complainant_name,
                          complainant_inn, justification, numb_purchase, prescription, file_paths,
-                         json.dumps(json_data)))
+                         json.dumps(json_data), file_content))
             db.commit()
             folder_num = folder_num + 1
             folder_amount = len(folders)
             print(f'\rInserted {folder_num} of {folder_amount} folders', end='')
         except:
+            folder_num = folder_num + 1
             print(f'\rFolder {folder_name} already exist!', end='')
