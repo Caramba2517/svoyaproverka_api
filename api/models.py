@@ -1,4 +1,6 @@
 from django.db import models
+from django.contrib.postgres.search import SearchVectorField, SearchVector
+from django.contrib.postgres.indexes import GinIndex
 
 
 class Complaint(models.Model):
@@ -16,6 +18,14 @@ class Complaint(models.Model):
     list_docs = models.TextField(null=True, blank=True)
     json_data = models.JSONField()
     docs = models.TextField(null=True, blank=True)
+    search_vector = SearchVectorField(null=True, editable=False)
+
+    def save(self, *args, **kwargs):
+        self.search_vector = SearchVector('docs')
+        super().save(*args, **kwargs)
 
     class Meta:
         app_label = 'api'
+        indexes = [
+            GinIndex(fields=['search_vector'])
+        ]

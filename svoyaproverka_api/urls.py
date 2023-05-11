@@ -25,6 +25,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('api.urls')),
     path('file/<path:file_path>/', serve_file, name='serve_file')
-]
+ ]
 
 urlpatterns += swagger_urls

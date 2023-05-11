@@ -10,7 +10,7 @@ class ComplaintFilter(filters.FilterSet):
     region = filters.ChoiceFilter(
         label='Подразделение ФАС',
         choices=[(region, region) for region in
-                 Complaint.objects.order_by().values_list('region', flat=True).distinct()])
+                 Complaint.objects.order_by('region').values_list('region', flat=True).distinct()])
     customer_name = filters.CharFilter(label='Имя заказчика', lookup_expr='icontains')
     customer_inn = filters.CharFilter(label='ИНН заказчика')
     complainant_name = filters.CharFilter(label='Имя жалобщика', lookup_expr='icontains')
@@ -32,3 +32,4 @@ class ComplaintFilter(filters.FilterSet):
             'complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name', 'complainant_inn',
             'status', 'numb_purchase', 'justification', 'docs',
         ]
+        search_fields = ['docs']
