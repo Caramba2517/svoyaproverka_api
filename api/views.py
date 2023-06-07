@@ -1,17 +1,16 @@
-import requests
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import generics
-from rest_framework.authentication import TokenAuthentication
-from rest_framework.permissions import IsAuthenticated
+# from rest_framework.authentication import TokenAuthentication
+# from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
 from api.models import Complaint
-from api.serializers import ComplaintSerializer
+from api.serializers import ComplaintSerializer, ComplaintsSearchSerializer, SolutionsSearchSerializer, PrescriptionsSearchSerializer
 from api.filters import ComplaintFilter
 import os
-from django.http import FileResponse
+from django.http import FileResponse, HttpResponse
 from django.shortcuts import redirect
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
@@ -59,3 +58,156 @@ class CustomAuthToken(ObtainAuthToken):
         token, created = Token.objects.get_or_create(user=user)
         return Response({'token': token.key})
 
+
+class SearchComplaintsView(APIView, LimitOffsetPagination):
+    productinventory_serializer = ComplaintsSearchSerializer
+    search_document = ComplaintsDocument
+
+    def get(self, request, query):
+        try:
+            q = Q(
+                "multi_match",
+                query=query,
+                fields=["docs_complaints"]
+            ) & Q(
+                should=[
+                    Q("match", is_default=True),
+                ],
+                minimum_should_match=1,
+            )
+            search = self.search_document.search().query(q)
+            response = search.execute()
+            results = self.paginate_queryset(response, request, view=self)
+            serializer = self.productinventory_serializer(results, many=True)
+            return self.get_paginated_response(serializer.data)
+        except Exception as e:
+            return HttpResponse(e, status=500)
+
+
+class SearchComplaintsView_70(APIView, LimitOffsetPagination):
+    productinventory_serializer = ComplaintsSearchSerializer
+    search_document = ComplaintsDocument
+
+    def get(self, request, query):
+        try:
+            q = Q(
+                "multi_match",
+                query=query,
+                fields=["docs_complaints"],
+                fuzziness="auto",
+            ) & Q(
+                should=[
+                    Q("match", is_default=True),
+                ],
+                minimum_should_match=1,
+            )
+            search = self.search_document.search().query(q)
+            response = search.execute()
+            results = self.paginate_queryset(response, request, view=self)
+            serializer = self.productinventory_serializer(results, many=True)
+            return self.get_paginated_response(serializer.data)
+        except Exception as e:
+            return HttpResponse(e, status=500)
+
+
+class SearchSolutionsView(APIView, LimitOffsetPagination):
+    productinventory_serializer = SolutionsSearchSerializer
+    search_document = SolutionsDocument
+
+    def get(self, request, query):
+        try:
+            q = Q(
+                "multi_match",
+                query=query,
+                fields=["docs_complaints"]
+            ) & Q(
+                should=[
+                    Q("match", is_default=True),
+                ],
+                minimum_should_match=1,
+            )
+            search = self.search_document.search().query(q)
+            response = search.execute()
+            results = self.paginate_queryset(response, request, view=self)
+            serializer = self.productinventory_serializer(results, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        except Exception as e:
+            return HttpResponse(e, status=500)
+
+
+class SearchSolutionsView_70(APIView, LimitOffsetPagination):
+    productinventory_serializer = SolutionsSearchSerializer
+    search_document = SolutionsDocument
+
+    def get(self, request, query):
+        try:
+            q = Q(
+                "multi_match",
+                query=query,
+                fields=["docs_complaints"],
+                fuzziness="auto",
+            ) & Q(
+                should=[
+                    Q("match", is_default=True),
+                ],
+                minimum_should_match=1,
+            )
+            search = self.search_document.search().query(q)
+            response = search.execute()
+            results = self.paginate_queryset(response, request, view=self)
+            serializer = self.productinventory_serializer(results, many=True)
+            return self.get_paginated_response(serializer.data)
+        except Exception as e:
+            return HttpResponse(e, status=500)
+
+
+class SearchPrescriptionsView(APIView, LimitOffsetPagination):
+    productinventory_serializer = PrescriptionsSearchSerializer
+    search_document = PrescriptionsDocument
+
+    def get(self, request, query):
+        try:
+            q = Q(
+                "multi_match",
+                query=query,
+                fields=["docs_complaints"]
+            ) & Q(
+                should=[
+                    Q("match", is_default=True),
+                ],
+                minimum_should_match=1,
+            )
+            search = self.search_document.search().query(q)
+            response = search.execute()
+            results = self.paginate_queryset(response, request, view=self)
+            serializer = self.productinventory_serializer(results, many=True)
+            return self.get_paginated_response(serializer.data)
+        except Exception as e:
+            return HttpResponse(e, status=500)
+
+
+class SearchPrescriptionsView_70(APIView, LimitOffsetPagination):
+    productinventory_serializer = PrescriptionsSearchSerializer
+    search_document = PrescriptionsDocument
+
+    def get(self, request, query):
+        try:
+            q = Q(
+                "multi_match",
+                query=query,
+                fields=["docs_complaints"],
+                fuzziness="auto",
+            ) & Q(
+                should=[
+                    Q("match", is_default=True),
+                ],
+                minimum_should_match=1,
+            )
+            search = self.search_document.search().query(q)
+            response = search.execute()
+            results = self.paginate_queryset(response, request, view=self)
+            serializer = self.productinventory_serializer(results, many=True)
+            return self.get_paginated_response(serializer.data)
+        except Exception as e:
+            return HttpResponse(e, status=500)

@@ -1,5 +1,4 @@
 from django.db import models
-from django.contrib.postgres.search import SearchVectorField, SearchVector
 from django.contrib.postgres.indexes import GinIndex
 
 

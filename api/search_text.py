@@ -16,7 +16,7 @@ def search_text_in_folder(list_docs_path):
                         return(text)
                 else:
                     try:
-                        text = textract.process(file_path).decode('utf-8', 'ignore').lower()
+                        text = textract.process(file_path).decode('utf-8', 'ignore')
                         return text
                     except Exception:
                         continue

@@ -1,9 +1,10 @@
 import json
 import os
 import psycopg2
+import re
 
 from decouple import config
-from datetime import datetime
+import datetime
 from api.search_text import search_text_in_folder
 
 db = psycopg2.connect(
@@ -17,6 +18,14 @@ db = psycopg2.connect(
 cur = db.cursor()
 data_folder = '/complaints/prs/ALL_DATA'
 folders = os.listdir(data_folder)
+current_date = datetime.datetime.now()
+three_days_ago = current_date - datetime.timedelta(days=3)
+three_days_ago_str = three_days_ago.strftime("%d.%m.%Y")
+days = datetime.datetime.strptime(three_days_ago_str, '%d.%m.%Y').date()
+cur.execute(f"SELECT complaint_id FROM api_complaint WHERE date >= '{days}'")
+list_for_update = [folder[0] for folder in cur.fetchall()]
+cur.execute(f"SELECT complaint_id FROM api_complaint WHERE date < '{days}'")
+list_for_passing = [folder[0] for folder in cur.fetchall()]
 folder_num = 0
 docs_complaint = ""
 docs_solution = ""
@@ -24,31 +33,65 @@ docs_prescriptions = ""
 for folder_name in folders:
     if folder_name in ['.DS_Store', 'docs_Решение', 'docs_Жалоба', 'docs_Предписание',' .json']:
         pass
+    if "_" in str(folder_name):
+        folder_name = folder_name.replace('_', '/')
+    if folder_name in list_for_passing:
+        folder_num += 1
+        print(f"\rPassing {folder_num} of {len(list_for_passing)} existing folders", end='')
     else:
+        if "/" in str(folder_name):
+            folder_name = folder_name.replace('/', '_')
         try:
             json_path = os.path.join(data_folder, folder_name, folder_name + '.json')
             with open(json_path, 'r') as f:
                 json_data = json.load(f)
-        except NotADirectoryError as e:
-            print(e)
-        except KeyError as e:
-            print(e)
+        except NotADirectoryError:
+            pass
+        except KeyError:
+            pass
+        except FileNotFoundError:
+            continue
+
         try:
-            list_docs_path = os.path.join(data_folder, folder_name, 'docs')
-            file_paths = ""
-            file_content = ""
-            if len(os.listdir(list_docs_path)) == 0:
-                file_paths = 'Нет файлов'
-            else:
-                for item in os.listdir(list_docs_path):
-                    item_path = os.path.join(list_docs_path, item)
-                    if os.path.isfile(item_path):
-                        file_paths += f'{item_path};'
+            for x in ['docs_Жалоба', 'docs_Решение', 'docs_Предписание']:
+                list_docs_path = os.path.join(data_folder, folder_name, x)
+                file_paths = ""
+                if len(os.listdir(list_docs_path)) == 0:
+                    file_paths = 'Нет файлов'
+                else:
+                    for item in os.listdir(list_docs_path):
+                        item_path = os.path.join(list_docs_path, item)
+                        if os.path.isfile(item_path):
+                            file_paths += f'{item_path};'
+                            content = search_text_in_folder(list_docs_path)
+                            latin_chars = re.compile('[a-zA-Z]')
+                            print(content)
+                            print(x)
+                            if content is not None and not latin_chars.search(content):
+                                content = content.replace('\n', '').replace('\f', '')
+                                if x == "docs_Жалоба":
+                                    docs_complaint += f'{content} '
+                                elif x == 'docs_Решение':
+                                    docs_solution += f'{content} '
+                                elif x == 'docs_Предписание':
+                                    docs_prescriptions += f'{content} '
+
+                    if len(file_paths) == 1:
+                        file_paths = file_paths[0]
                         content = search_text_in_folder(list_docs_path)
-                        file_content += f'{content};'
-                if len(file_paths) == 1:
-                    file_paths = file_paths[0]
-                    file_content = search_text_in_folder(list_docs_path)
+                        latin_chars = re.compile('[a-zA-Z]')
+                        x = ""
+                        print(content)
+
+                        if content is not None and not latin_chars.search(content):
+                            content = content.replace('\n', '').replace('\f', '')
+                            if x == "docs_Жалоба":
+                                docs_complaint += f'{content} '
+                            elif x == 'docs_Решение':
+                                docs_solution += f'{content} '
+                            elif x == 'docs_Предписание':
+                                docs_prescriptions += f'{content} '
+
         except KeyError:
             file_paths = 'Нет файлов'
             file_content = ""
@@ -65,14 +108,14 @@ for folder_name in folders:
         try:
             date_str = json_data[f'{folder_name}']['cardHeaderBlock_dict']['dates_dict']['Поступление жалобы']
             if date_str:
-                date = datetime.strptime(date_str, '%d.%m.%Y').date()
+                date = datetime.datetime.strptime(date_str, '%d.%m.%Y').date()
             else:
                 date = None
         except KeyError:
             try:
                 date_str = json_data[f'{folder_name}']['cardHeaderBlock_dict']['dates_dict']['Размещено']
                 if date_str:
-                    date = datetime.strptime(date_str, '%d.%m.%Y').date()
+                    date = datetime.datetime.strptime(date_str, '%d.%m.%Y').date()
                 else:
                     date = None
             except KeyError:
