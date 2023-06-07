@@ -30,4 +30,3 @@ six==1.16.0
 sqlparse==0.4.4
 uritemplate==4.1.1
 urllib3==1.26.15
-textract~=1.6.5

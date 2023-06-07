@@ -15,11 +15,14 @@ db = psycopg2.connect(
 )
 
 cur = db.cursor()
-data_folder = '/Parser/parser_jalob_/ALL_DATA'
+data_folder = '/complaints/prs/ALL_DATA'
 folders = os.listdir(data_folder)
 folder_num = 0
+docs_complaint = ""
+docs_solution = ""
+docs_prescriptions = ""
 for folder_name in folders:
-    if folder_name in ['.DS_Store', 'docs', '.json']:
+    if folder_name in ['.DS_Store', 'docs_Решение', 'docs_Жалоба', 'docs_Предписание',' .json']:
         pass
     else:
         try:
@@ -117,17 +120,35 @@ for folder_name in folders:
         except KeyError:
             prescription = 'Нет данных'
         try:
-            cur.execute(f"INSERT INTO api_complaint (complaint_id, status, date, region, customer_name, customer_inn, "
-                        f"complainant_name, complainant_inn, justification, numb_purchase, prescription, list_docs, "
-                        f"json_data, docs)"
-                        f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
-                        (complaint_id, status, date, region.upper(), customer_name, customer_inn, complainant_name,
-                         complainant_inn, justification, numb_purchase, prescription, file_paths,
-                         json.dumps(json_data), file_content))
-            db.commit()
-            folder_num = folder_num + 1
-            folder_amount = len(folders)
-            print(f'\rInserted {folder_num} of {folder_amount} folders', end='')
-        except:
-            folder_num = folder_num + 1
-            print(f'\rFolder {folder_name} already exist!', end='')
+            if docs_complaint == '':
+                docs_complaint = None
+            if docs_solution == '':
+                docs_solution = None
+            if docs_prescriptions == '':
+                docs_prescriptions = None
+            if folder_name in list_for_update:
+                cur.execute("UPDATE api_complaint SET status = %s, date = %s, region = %s, customer_name = %s, "
+                            "customer_inn = %s, complainant_name = %s, complainant_inn = %s, justification = %s, "
+                            "numb_purchase = %s, prescription = %s, list_docs = %s, json_data = %s, docs_complaint = %s,"
+                            " docs_solution = %s, docs_prescriptions = %s WHERE complaint_id = %s",
+                            (status, date, region.upper(), customer_name, customer_inn, complainant_name,
+                             complainant_inn,
+                             justification, numb_purchase, prescription, file_paths, json.dumps(json_data),
+                             docs_complaint, docs_solution, docs_prescriptions, folder_name))
+                db.commit()
+                folder_num = folder_num + 1
+            else:
+                cur.execute(f"INSERT INTO api_complaint (complaint_id, status, date, region, customer_name, customer_inn, "
+                            f"complainant_name, complainant_inn, justification, numb_purchase, prescription, list_docs, "
+                            f"json_data, docs_complaint, docs_solution, docs_prescriptions)"
+                            f"VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)",
+                            (complaint_id, status, date, region.upper(), customer_name, customer_inn, complainant_name,
+                             complainant_inn, justification, numb_purchase, prescription, file_paths,
+                             json.dumps(json_data), docs_complaint, docs_solution, docs_prescriptions))
+                db.commit()
+                folder_num = folder_num + 1
+                folder_amount = len(folders)
+                print(f'\rInserted {folder_num} of {folder_amount} existing folders', end='')
+        except Exception as e:
+            print(f'Have an error: \n{e} \nWith folder:\n {folder_name}')
+            continue

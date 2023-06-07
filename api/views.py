@@ -14,8 +14,9 @@ import os
 from django.http import FileResponse
 from django.shortcuts import redirect
 from rest_framework.pagination import LimitOffsetPagination
-from django.contrib.postgres.search import SearchRank, SearchQuery
-from django.db.models import F
+from rest_framework.views import APIView
+from api.documents import ComplaintsDocument, SolutionsDocument, PrescriptionsDocument
+from elasticsearch_dsl import Q
 
 
 def redirect_to_api_v1(request):
@@ -33,31 +34,19 @@ def serve_file(request, file_path):
 class ComplaintList(generics.ListAPIView):
     # authentication_classes = [TokenAuthentication]
     # permission_classes = [IsAuthenticated]
-    queryset = Complaint.objects.all()
+    queryset = Complaint.objects.all().order_by('-date')
     serializer_class = ComplaintSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = ComplaintFilter
     pagination_class = LimitOffsetPagination
     pagination_class.default_limit = 10
-    pagination_class.max_limit = 100
-    search_fields = ['docs']
-
-    def get_queryset(self):
-        queryset = super().get_queryset()
-        search_query = self.request.GET.get('search')
-        if search_query:
-            vector = SearchQuery(search_query)
-            queryset = queryset.annotate(
-                search=vector,
-                rank=SearchRank(F('search_vector'), vector)
-            ).filter(search=vector).order_by('-rank')
-        return queryset
+    pagination_class.max_limit = 20
 
 
 class ComplaintDetail(generics.RetrieveAPIView):
     # authentication_classes = [TokenAuthentication]
     # permission_classes = [IsAuthenticated]
-    queryset = Complaint.objects.all()
+    queryset = Complaint.objects.all().order_by('-date')
     serializer_class = ComplaintSerializer
     lookup_field = 'pk'
 
