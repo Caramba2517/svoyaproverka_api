@@ -1,6 +1,14 @@
 from rest_framework import serializers
 from api.models import Complaint
 import urllib.parse
+from urllib.parse import quote_plus
+
+
+class CustomDateTimeField(serializers.ReadOnlyField):
+    def to_representation(self, value):
+        if value is not None:
+            return value.date()
+        return None
 
 
 class ComplaintSerializer(serializers.ModelSerializer):
@@ -24,13 +32,18 @@ class ComplaintSerializer(serializers.ModelSerializer):
 
 
 class ComplaintsSearchSerializer(serializers.ModelSerializer):
+    complaint_id = serializers.SerializerMethodField()
     list_docs = serializers.SerializerMethodField()
+    date = CustomDateTimeField()
 
     class Meta:
         model = Complaint
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
-                  'status', 'numb_purchase', 'justification', 'list_docs', 'json_data', 'docs_complaints']
+                  'status', 'numb_purchase', 'justification', 'list_docs', 'docs_complaints']
+
+    def get_complaint_id(self, obj):
+        return f"https://svoyaproverka.ru/api/v2/complaint/{quote_plus(obj.complaint_id)}"
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
@@ -44,12 +57,13 @@ class ComplaintsSearchSerializer(serializers.ModelSerializer):
 
 class SolutionsSearchSerializer(serializers.ModelSerializer):
     list_docs = serializers.SerializerMethodField()
+    date = CustomDateTimeField()
 
     class Meta:
         model = Complaint
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
-                  'status', 'numb_purchase', 'justification', 'list_docs', 'json_data', 'docs_solutions']
+                  'status', 'numb_purchase', 'justification', 'list_docs', 'docs_complaints']
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
@@ -63,12 +77,13 @@ class SolutionsSearchSerializer(serializers.ModelSerializer):
 
 class PrescriptionsSearchSerializer(serializers.ModelSerializer):
     list_docs = serializers.SerializerMethodField()
+    date = CustomDateTimeField()
 
     class Meta:
         model = Complaint
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
-                  'status', 'numb_purchase', 'justification', 'list_docs', 'json_data', 'docs_prescriptions']
+                  'status', 'numb_purchase', 'justification', 'list_docs', 'docs_complaints']
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'

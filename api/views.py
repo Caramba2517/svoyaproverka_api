@@ -16,6 +16,8 @@ from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
 from api.documents import ComplaintsDocument, SolutionsDocument, PrescriptionsDocument
 from elasticsearch_dsl import Q
+from urllib.parse import quote_plus, urlencode
+
 
 
 def redirect_to_api_v1(request):
@@ -49,6 +51,10 @@ class ComplaintDetail(generics.RetrieveAPIView):
     serializer_class = ComplaintSerializer
     lookup_field = 'pk'
 
+    def get_object(self):
+        pk = quote_plus(self.kwargs['pk'])
+        return self.queryset.get(pk=pk)
+
 
 class CustomAuthToken(ObtainAuthToken):
     def post(self, request, *args, **kwargs):
@@ -59,7 +65,7 @@ class CustomAuthToken(ObtainAuthToken):
         return Response({'token': token.key})
 
 
-class SearchComplaintsView(APIView, LimitOffsetPagination):
+class SearchComplaintsView(APIView):
     productinventory_serializer = ComplaintsSearchSerializer
     search_document = ComplaintsDocument
 
@@ -76,12 +82,35 @@ class SearchComplaintsView(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            size = int(request.GET.get('size', 10))
+            from_value = int(request.GET.get('from', 0))
+            search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
-            results = self.paginate_queryset(response, request, view=self)
+            results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
-            return self.get_paginated_response(serializer.data)
+            next_link = None
+            previous_link = None
+            if from_value + size < response.hits.total.value:
+                params = {
+                    'size': str(size),
+                    'from': str(from_value + size)
+                }
+                next_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            if from_value - size >= 0:
+                params = {
+                    'size': str(size),
+                    'from': str(max(from_value - size, 0))
+                }
+                previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            data = {
+                'count': response.hits.total,
+                'next': next_link,
+                'previous': previous_link,
+                'results': serializer.data
+            }
+            return Response(data)
         except Exception as e:
-            return HttpResponse(e, status=500)
+            return HttpResponse(str(e), status=500)
 
 
 class SearchComplaintsView_70(APIView, LimitOffsetPagination):
@@ -102,12 +131,35 @@ class SearchComplaintsView_70(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            size = int(request.GET.get('size', 10))
+            from_value = int(request.GET.get('from', 0))
+            search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
-            results = self.paginate_queryset(response, request, view=self)
+            results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
-            return self.get_paginated_response(serializer.data)
+            next_link = None
+            previous_link = None
+            if from_value + size < response.hits.total.value:
+                params = {
+                    'size': str(size),
+                    'from': str(from_value + size)
+                }
+                next_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            if from_value - size >= 0:
+                params = {
+                    'size': str(size),
+                    'from': str(max(from_value - size, 0))
+                }
+                previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            data = {
+                'count': response.hits.total,
+                'next': next_link,
+                'previous': previous_link,
+                'results': serializer.data
+            }
+            return Response(data)
         except Exception as e:
-            return HttpResponse(e, status=500)
+            return HttpResponse(str(e), status=500)
 
 
 class SearchSolutionsView(APIView, LimitOffsetPagination):
@@ -127,13 +179,35 @@ class SearchSolutionsView(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            size = int(request.GET.get('size', 10))
+            from_value = int(request.GET.get('from', 0))
+            search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
-            results = self.paginate_queryset(response, request, view=self)
+            results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
-            return self.get_paginated_response(serializer.data)
-
+            next_link = None
+            previous_link = None
+            if from_value + size < response.hits.total.value:
+                params = {
+                    'size': str(size),
+                    'from': str(from_value + size)
+                }
+                next_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            if from_value - size >= 0:
+                params = {
+                    'size': str(size),
+                    'from': str(max(from_value - size, 0))
+                }
+                previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            data = {
+                'count': response.hits.total,
+                'next': next_link,
+                'previous': previous_link,
+                'results': serializer.data
+            }
+            return Response(data)
         except Exception as e:
-            return HttpResponse(e, status=500)
+            return HttpResponse(str(e), status=500)
 
 
 class SearchSolutionsView_70(APIView, LimitOffsetPagination):
@@ -154,12 +228,35 @@ class SearchSolutionsView_70(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            size = int(request.GET.get('size', 10))
+            from_value = int(request.GET.get('from', 0))
+            search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
-            results = self.paginate_queryset(response, request, view=self)
+            results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
-            return self.get_paginated_response(serializer.data)
+            next_link = None
+            previous_link = None
+            if from_value + size < response.hits.total.value:
+                params = {
+                    'size': str(size),
+                    'from': str(from_value + size)
+                }
+                next_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            if from_value - size >= 0:
+                params = {
+                    'size': str(size),
+                    'from': str(max(from_value - size, 0))
+                }
+                previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            data = {
+                'count': response.hits.total,
+                'next': next_link,
+                'previous': previous_link,
+                'results': serializer.data
+            }
+            return Response(data)
         except Exception as e:
-            return HttpResponse(e, status=500)
+            return HttpResponse(str(e), status=500)
 
 
 class SearchPrescriptionsView(APIView, LimitOffsetPagination):
@@ -179,12 +276,35 @@ class SearchPrescriptionsView(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            size = int(request.GET.get('size', 10))
+            from_value = int(request.GET.get('from', 0))
+            search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
-            results = self.paginate_queryset(response, request, view=self)
+            results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
-            return self.get_paginated_response(serializer.data)
+            next_link = None
+            previous_link = None
+            if from_value + size < response.hits.total.value:
+                params = {
+                    'size': str(size),
+                    'from': str(from_value + size)
+                }
+                next_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            if from_value - size >= 0:
+                params = {
+                    'size': str(size),
+                    'from': str(max(from_value - size, 0))
+                }
+                previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            data = {
+                'count': response.hits.total,
+                'next': next_link,
+                'previous': previous_link,
+                'results': serializer.data
+            }
+            return Response(data)
         except Exception as e:
-            return HttpResponse(e, status=500)
+            return HttpResponse(str(e), status=500)
 
 
 class SearchPrescriptionsView_70(APIView, LimitOffsetPagination):
@@ -205,9 +325,32 @@ class SearchPrescriptionsView_70(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            size = int(request.GET.get('size', 10))
+            from_value = int(request.GET.get('from', 0))
+            search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
-            results = self.paginate_queryset(response, request, view=self)
+            results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
-            return self.get_paginated_response(serializer.data)
+            next_link = None
+            previous_link = None
+            if from_value + size < response.hits.total.value:
+                params = {
+                    'size': str(size),
+                    'from': str(from_value + size)
+                }
+                next_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            if from_value - size >= 0:
+                params = {
+                    'size': str(size),
+                    'from': str(max(from_value - size, 0))
+                }
+                previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            data = {
+                'count': response.hits.total,
+                'next': next_link,
+                'previous': previous_link,
+                'results': serializer.data
+            }
+            return Response(data)
         except Exception as e:
-            return HttpResponse(e, status=500)
+            return HttpResponse(str(e), status=500)
