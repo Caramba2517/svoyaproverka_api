@@ -7,21 +7,21 @@ from rest_framework.authtoken.models import Token
 from rest_framework.response import Response
 
 from api.models import Complaint
-from api.serializers import ComplaintSerializer, ComplaintsSearchSerializer, SolutionsSearchSerializer, PrescriptionsSearchSerializer
+from api.serializers import ComplaintSerializer, ComplaintsSearchSerializer, SolutionsSearchSerializer, PrescriptionsSearchSerializer, AllSearch
 from api.filters import ComplaintFilter
 import os
 from django.http import FileResponse, HttpResponse
 from django.shortcuts import redirect
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.views import APIView
-from api.documents import ComplaintsDocument, SolutionsDocument, PrescriptionsDocument
+from api.documents import ComplaintsDocument, SolutionsDocument, PrescriptionsDocument, AllDocument
 from elasticsearch_dsl import Q
 from urllib.parse import quote_plus, urlencode
 
 
 
 def redirect_to_api_v1(request):
-    return redirect('http://89.108.118.100:8000/api/v1/complaints/?limit=10')
+    return redirect('https://svoyaproverka.ru/api/v2/complaints/?limit=10')
 
 
 def serve_file(request, file_path):
@@ -103,7 +103,7 @@ class SearchComplaintsView(APIView):
                 }
                 previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
             data = {
-                'count': response.hits.total,
+                'count': response.hits.total.value,
                 'next': next_link,
                 'previous': previous_link,
                 'results': serializer.data
@@ -152,7 +152,7 @@ class SearchComplaintsView_70(APIView, LimitOffsetPagination):
                 }
                 previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
             data = {
-                'count': response.hits.total,
+                'count': response.hits.total.value,
                 'next': next_link,
                 'previous': previous_link,
                 'results': serializer.data
@@ -171,7 +171,7 @@ class SearchSolutionsView(APIView, LimitOffsetPagination):
             q = Q(
                 "multi_match",
                 query=query,
-                fields=["docs_complaints"]
+                fields=["docs_solutions"]
             ) & Q(
                 should=[
                     Q("match", is_default=True),
@@ -200,7 +200,7 @@ class SearchSolutionsView(APIView, LimitOffsetPagination):
                 }
                 previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
             data = {
-                'count': response.hits.total,
+                'count': response.hits.total.value,
                 'next': next_link,
                 'previous': previous_link,
                 'results': serializer.data
@@ -219,7 +219,7 @@ class SearchSolutionsView_70(APIView, LimitOffsetPagination):
             q = Q(
                 "multi_match",
                 query=query,
-                fields=["docs_complaints"],
+                fields=["docs_solutions"],
                 fuzziness="auto",
             ) & Q(
                 should=[
@@ -249,7 +249,7 @@ class SearchSolutionsView_70(APIView, LimitOffsetPagination):
                 }
                 previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
             data = {
-                'count': response.hits.total,
+                'count': response.hits.total.value,
                 'next': next_link,
                 'previous': previous_link,
                 'results': serializer.data
@@ -268,7 +268,7 @@ class SearchPrescriptionsView(APIView, LimitOffsetPagination):
             q = Q(
                 "multi_match",
                 query=query,
-                fields=["docs_complaints"]
+                fields=["docs_prescriptions"]
             ) & Q(
                 should=[
                     Q("match", is_default=True),
@@ -297,7 +297,7 @@ class SearchPrescriptionsView(APIView, LimitOffsetPagination):
                 }
                 previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
             data = {
-                'count': response.hits.total,
+                'count': response.hits.total.value,
                 'next': next_link,
                 'previous': previous_link,
                 'results': serializer.data
@@ -316,7 +316,7 @@ class SearchPrescriptionsView_70(APIView, LimitOffsetPagination):
             q = Q(
                 "multi_match",
                 query=query,
-                fields=["docs_complaints"],
+                fields=["docs_prescriptions"],
                 fuzziness="auto",
             ) & Q(
                 should=[
@@ -346,7 +346,105 @@ class SearchPrescriptionsView_70(APIView, LimitOffsetPagination):
                 }
                 previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
             data = {
-                'count': response.hits.total,
+                'count': response.hits.total.value,
+                'next': next_link,
+                'previous': previous_link,
+                'results': serializer.data
+            }
+            return Response(data)
+        except Exception as e:
+            return HttpResponse(str(e), status=500)
+            
+            
+            
+class SearchAllView(APIView, LimitOffsetPagination):
+    productinventory_serializer = AllSearch
+    search_document = AllDocument
+
+    def get(self, request, query):
+        try:
+            q = Q(
+                "multi_match",
+                query=query,
+                fields=["docs_prescriptions", "docs_solutions", "docs_complaints"]
+            ) & Q(
+                should=[
+                    Q("match", is_default=True),
+                ],
+                minimum_should_match=1,
+            )
+            search = self.search_document.search().query(q)
+            size = int(request.GET.get('size', 10))
+            from_value = int(request.GET.get('from', 0))
+            search = search.extra(size=size, from_=from_value, track_total_hits=True)
+            response = search.execute()
+            results = response.hits
+            serializer = self.productinventory_serializer(results, many=True)
+            next_link = None
+            previous_link = None
+            if from_value + size < response.hits.total.value:
+                params = {
+                    'size': str(size),
+                    'from': str(from_value + size)
+                }
+                next_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            if from_value - size >= 0:
+                params = {
+                    'size': str(size),
+                    'from': str(max(from_value - size, 0))
+                }
+                previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            data = {
+                'count': response.hits.total.value,
+                'next': next_link,
+                'previous': previous_link,
+                'results': serializer.data
+            }
+            return Response(data)
+        except Exception as e:
+            return HttpResponse(str(e), status=500)
+
+
+class SearchAllView_70(APIView, LimitOffsetPagination):
+    productinventory_serializer = AllSearch
+    search_document = AllDocument
+
+    def get(self, request, query):
+        try:
+            q = Q(
+                "multi_match",
+                query=query,
+                fields=["docs_prescriptions", "docs_solutions", "docs_complaints"],
+                fuzziness="auto",
+            ) & Q(
+                should=[
+                    Q("match", is_default=True),
+                ],
+                minimum_should_match=1,
+            )
+            search = self.search_document.search().query(q)
+            size = int(request.GET.get('size', 10))
+            from_value = int(request.GET.get('from', 0))
+            search = search.extra(size=size, from_=from_value, track_total_hits=True)
+            response = search.execute()
+            results = response.hits
+            serializer = self.productinventory_serializer(results, many=True)
+            next_link = None
+            previous_link = None
+            if from_value + size < response.hits.total.value:
+                params = {
+                    'size': str(size),
+                    'from': str(from_value + size)
+                }
+                next_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            if from_value - size >= 0:
+                params = {
+                    'size': str(size),
+                    'from': str(max(from_value - size, 0))
+                }
+                previous_link = request.build_absolute_uri('?{}'.format(urlencode(params)))
+            data = {
+                'count': response.hits.total.value,
                 'next': next_link,
                 'previous': previous_link,
                 'results': serializer.data

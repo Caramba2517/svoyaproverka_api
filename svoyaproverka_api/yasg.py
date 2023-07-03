@@ -6,7 +6,7 @@ from drf_yasg import openapi
 schema_view = get_schema_view(
     openapi.Info(
         title="Svoya-Proverka API",
-        default_version='v0.1',
+        default_version='v2.0',
         description="API предназначен для быстрого поиска и проверки жалоб и бла-бла...",
         contact=openapi.Contact(email="caramba.ge@yandex.ru"),
         license=openapi.License(name="Svoya-proverka API"),
@@ -16,6 +16,6 @@ schema_view = get_schema_view(
 )
 
 urlpatterns = [
-    path('api_docs/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
-    path('api_docs/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+    path('documentation/swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('documentation/redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
 ]

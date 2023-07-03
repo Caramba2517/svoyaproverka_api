@@ -9,7 +9,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("DJANGO_SECRET")
 DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+ALLOWED_HOSTS = ['svoyaproverka.ru', '89.108.118.100', 'fas.svoyaproverka.ru', 'docs.svoyaproverka.ru']
+
 INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -17,11 +18,16 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'rest_framework',
     'rest_framework_swagger',
+    
     'api',
     'drf_yasg',
     'django_filters',
-    'django_elasticsearch_dsl'
+    'django_elasticsearch_dsl',
+    'sslserver',
 ]
+
+SSL_CERTIFICATE = "/etc/nginx/ssl/certificate.crt"
+SSL_PRIVATE_KEY = "/etc/nginx/ssl/key.key"
 
 ELASTICSEARCH_DSL = {
     'default': {
