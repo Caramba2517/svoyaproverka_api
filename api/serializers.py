@@ -32,7 +32,6 @@ class ComplaintSerializer(serializers.ModelSerializer):
 
 
 class ComplaintsSearchSerializer(serializers.ModelSerializer):
-    complaint_id = serializers.SerializerMethodField()
     list_docs = serializers.SerializerMethodField()
     date = CustomDateTimeField()
 
@@ -41,9 +40,6 @@ class ComplaintsSearchSerializer(serializers.ModelSerializer):
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
                   'status', 'numb_purchase', 'justification', 'list_docs', 'docs_complaints']
-
-    def get_complaint_id(self, obj):
-        return f"https://svoyaproverka.ru/api/v2/complaint/{quote_plus(obj.complaint_id)}"
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
@@ -55,9 +51,7 @@ class ComplaintsSearchSerializer(serializers.ModelSerializer):
         return [f"{site_url}{urllib.parse.quote(doc.strip())}" for doc in docs]
 
 
-
 class SolutionsSearchSerializer(serializers.ModelSerializer):
-    complaint_id = serializers.SerializerMethodField()
     list_docs = serializers.SerializerMethodField()
     date = CustomDateTimeField()
 
@@ -66,9 +60,6 @@ class SolutionsSearchSerializer(serializers.ModelSerializer):
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
                   'status', 'numb_purchase', 'justification', 'list_docs', 'docs_solutions']
-
-    def get_complaint_id(self, obj):
-        return f"https://svoyaproverka.ru/api/v2/complaint/{quote_plus(obj.complaint_id)}"
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
@@ -81,7 +72,6 @@ class SolutionsSearchSerializer(serializers.ModelSerializer):
 
 
 class PrescriptionsSearchSerializer(serializers.ModelSerializer):
-    complaint_id = serializers.SerializerMethodField()
     list_docs = serializers.SerializerMethodField()
     date = CustomDateTimeField()
 
@@ -90,9 +80,6 @@ class PrescriptionsSearchSerializer(serializers.ModelSerializer):
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
                   'status', 'numb_purchase', 'justification', 'list_docs', 'docs_prescriptions']
-
-    def get_complaint_id(self, obj):
-        return f"https://svoyaproverka.ru/api/v2/complaint/{quote_plus(obj.complaint_id)}"
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
@@ -106,7 +93,6 @@ class PrescriptionsSearchSerializer(serializers.ModelSerializer):
         
 
 class AllSearch(serializers.ModelSerializer):
-    complaint_id = serializers.SerializerMethodField()
     list_docs = serializers.SerializerMethodField()
     date = CustomDateTimeField()
 
@@ -115,9 +101,6 @@ class AllSearch(serializers.ModelSerializer):
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
                   'status', 'numb_purchase', 'justification', 'list_docs', 'docs_prescriptions', 'docs_solutions', 'docs_complaints' ]
-
-    def get_complaint_id(self, obj):
-        return f"https://svoyaproverka.ru/api/v2/complaint/{quote_plus(obj.complaint_id)}"
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
