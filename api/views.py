@@ -19,7 +19,6 @@ from elasticsearch_dsl import Q
 from urllib.parse import quote_plus, urlencode
 
 
-
 def redirect_to_api_v1(request):
     return redirect('https://svoyaproverka.ru/api/v2/complaints/?limit=10')
 
@@ -74,7 +73,8 @@ class SearchComplaintsView(APIView):
             q = Q(
                 "multi_match",
                 query=query,
-                fields=["docs_complaints"]
+                fields=["docs_complaints"],
+                type='phrase'
             ) & Q(
                 should=[
                     Q("match", is_default=True),
@@ -120,10 +120,11 @@ class SearchComplaintsView_70(APIView, LimitOffsetPagination):
     def get(self, request, query):
         try:
             q = Q(
-                "multi_match",
-                query=query,
-                fields=["docs_complaints"],
-                fuzziness="auto",
+                "match_phrase",
+                docs_complaints={
+                    "query": query,
+                    "slop": 2
+                }
             ) & Q(
                 should=[
                     Q("match", is_default=True),
@@ -171,7 +172,8 @@ class SearchSolutionsView(APIView, LimitOffsetPagination):
             q = Q(
                 "multi_match",
                 query=query,
-                fields=["docs_solutions"]
+                fields=["docs_solutions"],
+                type='phrase'
             ) & Q(
                 should=[
                     Q("match", is_default=True),
@@ -217,10 +219,11 @@ class SearchSolutionsView_70(APIView, LimitOffsetPagination):
     def get(self, request, query):
         try:
             q = Q(
-                "multi_match",
-                query=query,
-                fields=["docs_solutions"],
-                fuzziness="auto",
+                "match_phrase",
+                docs_solutions={
+                    "query": query,
+                    "slop": 2
+                }
             ) & Q(
                 should=[
                     Q("match", is_default=True),
@@ -268,7 +271,8 @@ class SearchPrescriptionsView(APIView, LimitOffsetPagination):
             q = Q(
                 "multi_match",
                 query=query,
-                fields=["docs_prescriptions"]
+                fields=["docs_prescriptions"],
+                type='phrase'
             ) & Q(
                 should=[
                     Q("match", is_default=True),
@@ -314,10 +318,11 @@ class SearchPrescriptionsView_70(APIView, LimitOffsetPagination):
     def get(self, request, query):
         try:
             q = Q(
-                "multi_match",
-                query=query,
-                fields=["docs_prescriptions"],
-                fuzziness="auto",
+                "match_phrase",
+                docs_prescriptions={
+                    "query": query,
+                    "slop": 2
+                }
             ) & Q(
                 should=[
                     Q("match", is_default=True),
@@ -354,9 +359,8 @@ class SearchPrescriptionsView_70(APIView, LimitOffsetPagination):
             return Response(data)
         except Exception as e:
             return HttpResponse(str(e), status=500)
-            
-            
-            
+
+
 class SearchAllView(APIView, LimitOffsetPagination):
     productinventory_serializer = AllSearch
     search_document = AllDocument
@@ -366,7 +370,8 @@ class SearchAllView(APIView, LimitOffsetPagination):
             q = Q(
                 "multi_match",
                 query=query,
-                fields=["docs_prescriptions", "docs_solutions", "docs_complaints"]
+                fields=["docs_prescriptions", "docs_solutions", "docs_complaints"],
+                type='phrase'
             ) & Q(
                 should=[
                     Q("match", is_default=True),
@@ -412,10 +417,23 @@ class SearchAllView_70(APIView, LimitOffsetPagination):
     def get(self, request, query):
         try:
             q = Q(
-                "multi_match",
-                query=query,
-                fields=["docs_prescriptions", "docs_solutions", "docs_complaints"],
-                fuzziness="auto",
+                "match_phrase",
+                docs_prescriptions={
+                    "query": query,
+                    "slop": 2
+                }
+            ) | Q(
+                "match_phrase",
+                docs_solutions={
+                    "query": query,
+                    "slop": 2
+                }
+            ) | Q(
+                "match_phrase",
+                docs_complaints={
+                    "query": query,
+                    "slop": 2
+                }
             ) & Q(
                 should=[
                     Q("match", is_default=True),
