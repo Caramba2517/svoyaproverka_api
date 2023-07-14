@@ -114,5 +114,5 @@ class ComplaintFilter(filters.FilterSet):
         model = Complaint
         fields = [
             'complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name', 'complainant_inn',
-            'status', 'numb_purchase', 'justification', 
+            'status', 'numb_purchase', 'justification', 'docs_complaints', 'docs_solutions', 'docs_prescriptions'
         ]
