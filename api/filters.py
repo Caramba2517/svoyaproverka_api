@@ -110,6 +110,7 @@ class ComplaintFilter(filters.FilterSet):
         queryset = queryset.filter(complaint_id__in=complaint_ids)
         return queryset
 
+
     class Meta:
         model = Complaint
         fields = [

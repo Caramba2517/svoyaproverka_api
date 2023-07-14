@@ -167,6 +167,7 @@ class SearchSolutionsView(APIView, LimitOffsetPagination):
     productinventory_serializer = SolutionsSearchSerializer
     search_document = SolutionsDocument
 
+
     def get(self, request, query):
         try:
             q = Q(
