@@ -20,7 +20,7 @@ from urllib.parse import quote_plus, urlencode
 
 
 def redirect_to_api_v1(request):
-    return redirect('https://svoyaproverka.ru/api/v2/complaints/?limit=10')
+    return redirect('https://89.108.111.14:8000/api/v2/complaints/?limit=10')
 
 
 def serve_file(request, file_path):

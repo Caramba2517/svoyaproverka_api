@@ -9,7 +9,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("DJANGO_SECRET")
 DEBUG = True
 
-ALLOWED_HOSTS = ['svoyaproverka.ru', '89.108.118.100', 'fas.svoyaproverka.ru', 'docs.svoyaproverka.ru']
+ALLOWED_HOSTS = ['svoyaproverka.ru', '89.108.111.14', 'fas.svoyaproverka.ru', 'docs.svoyaproverka.ru']
 
 INSTALLED_APPS = [
     'django.contrib.auth',
