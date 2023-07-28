@@ -73,9 +73,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'svoya_proverka_api',
-        'USER': 'postgres',
+        'USER': 'telegram',
         'PASSWORD': 'Golova123',
-        'HOST': '89.108.118.100',
+        'HOST': '89.108.111.14',
         'PORT': '5432',
     }
 }
