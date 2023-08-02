@@ -14,13 +14,15 @@ class CustomDateTimeField(serializers.ReadOnlyField):
 
 class ComplaintSerializer(serializers.ModelSerializer):
     list_docs = serializers.SerializerMethodField()
+    highlights = serializers.SerializerMethodField()
 
     class Meta:
         model = Complaint
         fields = [
             'complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name', 'complainant_inn',
-            'status', 'numb_purchase', 'justification', 'list_docs', 'json_data'
+            'status', 'numb_purchase', 'justification', 'list_docs', 'json_data', 'highlights'
         ]
+
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
@@ -30,6 +32,17 @@ class ComplaintSerializer(serializers.ModelSerializer):
         docs_str = obj.list_docs[:-1]
         docs = docs_str.split(";")
         return [f"{site_url}{urllib.parse.quote(doc.strip())}" for doc in docs]
+
+    def get_highlights(self, obj):
+        try:
+            return obj.highlights
+        except:
+            return "Нет запроса"
+
+
+
+
+
 
 
 class ComplaintsSearchSerializer(serializers.ModelSerializer):

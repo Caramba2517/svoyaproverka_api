@@ -41,15 +41,33 @@ class ComplaintFilter(filters.FilterSet):
     docs_prescriptions_2 = filters.CharFilter(method='search_docs_prescriptions_2',
                                               label='Поиск по предписаниям (сходство более 70%)')
 
+    # def search_docs_complaints(self, queryset, name, value, page_number=1, page_size=10):
+    #     client = Elasticsearch(timeout=60)
+    #     s = Search(using=client, index='complaints')
+    #     s = s.query('match_phrase', docs_complaints=value)
+    #     s = s[0:10000]
+    #     response = s.execute()
+    #     complaint_ids = [hit.meta.id for hit in response.hits]
+    #     queryset = queryset.filter(complaint_id__in=complaint_ids)
+    #     return queryset
     def search_docs_complaints(self, queryset, name, value, page_number=1, page_size=10):
         client = Elasticsearch(timeout=60)
         s = Search(using=client, index='complaints')
         s = s.query('match_phrase', docs_complaints=value)
+        s = s.highlight('docs_complaints', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+                        pre_tags='', post_tags='')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
-        queryset = queryset.filter(complaint_id__in=complaint_ids)
-        return queryset
+        highlights_dict = {}
+        for hit in response.hits:
+            if 'highlight' in hit.meta:
+                highlights_dict[hit.meta.id] = hit.meta.highlight.docs_complaints[0]
+        complaints = queryset.filter(complaint_id__in=complaint_ids)
+        for complaint in complaints:
+            complaint.highlights = highlights_dict.get(complaint.complaint_id, [])
+
+        return complaints
 
     def search_docs_complaints_2(self, queryset, name, value):
         client = Elasticsearch(timeout=60)
@@ -58,21 +76,39 @@ class ComplaintFilter(filters.FilterSet):
             'query': value,
             'slop': 2
         })
+        s = s.highlight('docs_complaints', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+                        pre_tags='', post_tags='')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
-        queryset = queryset.filter(complaint_id__in=complaint_ids)
-        return queryset
+        highlights_dict = {}
+        for hit in response.hits:
+            if 'highlight' in hit.meta:
+                highlights_dict[hit.meta.id] = hit.meta.highlight.docs_complaints[0]
+        complaints = queryset.filter(complaint_id__in=complaint_ids)
+        for complaint in complaints:
+            complaint.highlights = highlights_dict.get(complaint.complaint_id, [])
+
+        return complaints
 
     def search_docs_solutions(self, queryset, name, value):
         client = Elasticsearch(timeout=60)
         s = Search(using=client, index='solutions')
         s = s.query('match_phrase', docs_solutions=value)
+        s = s.highlight('docs_solutions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+                        pre_tags='', post_tags='')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
-        queryset = queryset.filter(complaint_id__in=complaint_ids)
-        return queryset
+        highlights_dict = {}
+        for hit in response.hits:
+            if 'highlight' in hit.meta:
+                highlights_dict[hit.meta.id] = hit.meta.highlight.docs_solutions[0]
+        complaints = queryset.filter(complaint_id__in=complaint_ids)
+        for complaint in complaints:
+            complaint.highlights = highlights_dict.get(complaint.complaint_id, [])
+
+        return complaints
 
     def search_docs_solutions_2(self, queryset, name, value):
         client = Elasticsearch(timeout=60)
@@ -81,21 +117,39 @@ class ComplaintFilter(filters.FilterSet):
             'query': value,
             'slop': 2
         })
+        s = s.highlight('docs_solutions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+                        pre_tags='', post_tags='')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
-        queryset = queryset.filter(complaint_id__in=complaint_ids)
-        return queryset
+        highlights_dict = {}
+        for hit in response.hits:
+            if 'highlight' in hit.meta:
+                highlights_dict[hit.meta.id] = hit.meta.highlight.docs_solutions[0]
+        complaints = queryset.filter(complaint_id__in=complaint_ids)
+        for complaint in complaints:
+            complaint.highlights = highlights_dict.get(complaint.complaint_id, [])
+
+        return complaints
 
     def search_docs_prescriptions(self, queryset, name, value):
         client = Elasticsearch(timeout=60)
         s = Search(using=client, index='prescriptions')
         s = s.query('match_phrase', docs_prescriptions=value)
+        s = s.highlight('docs_prescriptions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+                        pre_tags='', post_tags='')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
-        queryset = queryset.filter(complaint_id__in=complaint_ids)
-        return queryset
+        highlights_dict = {}
+        for hit in response.hits:
+            if 'highlight' in hit.meta:
+                highlights_dict[hit.meta.id] = hit.meta.highlight.docs_prescriptions[0]
+        complaints = queryset.filter(complaint_id__in=complaint_ids)
+        for complaint in complaints:
+            complaint.highlights = highlights_dict.get(complaint.complaint_id, [])
+
+        return complaints
 
     def search_docs_prescriptions_2(self, queryset, name, value):
         client = Elasticsearch(timeout=60)
@@ -104,11 +158,20 @@ class ComplaintFilter(filters.FilterSet):
             'query': value,
             'slop': 2
         })
+        s = s.highlight('docs_prescriptions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+                        pre_tags='', post_tags='')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
-        queryset = queryset.filter(complaint_id__in=complaint_ids)
-        return queryset
+        highlights_dict = {}
+        for hit in response.hits:
+            if 'highlight' in hit.meta:
+                highlights_dict[hit.meta.id] = hit.meta.highlight.docs_prescriptions[0]
+        complaints = queryset.filter(complaint_id__in=complaint_ids)
+        for complaint in complaints:
+            complaint.highlights = highlights_dict.get(complaint.complaint_id, [])
+
+        return complaints
 
 
     class Meta:
