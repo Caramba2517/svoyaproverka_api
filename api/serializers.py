@@ -23,7 +23,6 @@ class ComplaintSerializer(serializers.ModelSerializer):
             'status', 'numb_purchase', 'justification', 'list_docs', 'json_data', 'highlights'
         ]
 
-
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
         site_url = "https://svoyaproverka.ru/file"
@@ -40,11 +39,6 @@ class ComplaintSerializer(serializers.ModelSerializer):
             return "Нет запроса"
 
 
-
-
-
-
-
 class ComplaintsSearchSerializer(serializers.ModelSerializer):
     list_docs = serializers.SerializerMethodField()
     date = CustomDateTimeField()
@@ -53,7 +47,7 @@ class ComplaintsSearchSerializer(serializers.ModelSerializer):
         model = Complaint
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
-                  'status', 'numb_purchase', 'justification', 'list_docs', 'docs_complaints']
+                  'status', 'numb_purchase', 'justification', 'list_docs']
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
@@ -73,7 +67,7 @@ class SolutionsSearchSerializer(serializers.ModelSerializer):
         model = Complaint
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
-                  'status', 'numb_purchase', 'justification', 'list_docs', 'docs_solutions']
+                  'status', 'numb_purchase', 'justification', 'list_docs']
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
@@ -93,7 +87,7 @@ class PrescriptionsSearchSerializer(serializers.ModelSerializer):
         model = Complaint
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
-                  'status', 'numb_purchase', 'justification', 'list_docs', 'docs_prescriptions']
+                  'status', 'numb_purchase', 'justification', 'list_docs']
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
@@ -113,8 +107,7 @@ class AllSearch(serializers.ModelSerializer):
         model = Complaint
         fields = ['complaint_id', 'date', 'region', 'customer_name', 'customer_inn', 'complainant_name',
                   'complainant_inn',
-                  'status', 'numb_purchase', 'justification', 'list_docs', 'docs_prescriptions', 'docs_solutions',
-                  'docs_complaints']
+                  'status', 'numb_purchase', 'justification', 'list_docs']
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'

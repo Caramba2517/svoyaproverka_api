@@ -82,12 +82,17 @@ class SearchComplaintsView(APIView):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            search = search.highlight('docs_complaints', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+                                      post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
             search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
             results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
+            for hit, serialized_data in zip(results, serializer.data):
+                if 'highlight' in hit.meta:
+                    serialized_data['highlights'] = hit.meta.highlight.docs_complaints[0]
             next_link = None
             previous_link = None
             if from_value + size < response.hits.total.value:
@@ -132,12 +137,17 @@ class SearchComplaintsView_70(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            search = search.highlight('docs_complaints', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+                                      post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
             search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
             results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
+            for hit, serialized_data in zip(results, serializer.data):
+                if 'highlight' in hit.meta:
+                    serialized_data['highlights'] = hit.meta.highlight.docs_complaints[0]
             next_link = None
             previous_link = None
             if from_value + size < response.hits.total.value:
@@ -167,7 +177,6 @@ class SearchSolutionsView(APIView, LimitOffsetPagination):
     productinventory_serializer = SolutionsSearchSerializer
     search_document = SolutionsDocument
 
-
     def get(self, request, query):
         try:
             q = Q(
@@ -182,12 +191,17 @@ class SearchSolutionsView(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            search = search.highlight('docs_solutions', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+                                      post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
             search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
             results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
+            for hit, serialized_data in zip(results, serializer.data):
+                if 'highlight' in hit.meta:
+                    serialized_data['highlights'] = hit.meta.highlight.docs_solutions[0]
             next_link = None
             previous_link = None
             if from_value + size < response.hits.total.value:
@@ -232,12 +246,17 @@ class SearchSolutionsView_70(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            search = search.highlight('docs_solutions', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+                                      post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
             search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
             results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
+            for hit, serialized_data in zip(results, serializer.data):
+                if 'highlight' in hit.meta:
+                    serialized_data['highlights'] = hit.meta.highlight.docs_solutions[0]
             next_link = None
             previous_link = None
             if from_value + size < response.hits.total.value:
@@ -281,12 +300,17 @@ class SearchPrescriptionsView(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            search = search.highlight('docs_prescriptions', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+                                      post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
             search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
             results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
+            for hit, serialized_data in zip(results, serializer.data):
+                if 'highlight' in hit.meta:
+                    serialized_data['highlights'] = hit.meta.highlight.docs_prescriptions[0]
             next_link = None
             previous_link = None
             if from_value + size < response.hits.total.value:
@@ -331,12 +355,17 @@ class SearchPrescriptionsView_70(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            search = search.highlight('docs_prescriptions', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+                                      post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
             search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
             results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
+            for hit, serialized_data in zip(results, serializer.data):
+                if 'highlight' in hit.meta:
+                    serialized_data['highlights'] = hit.meta.highlight.docs_prescriptions[0]
             next_link = None
             previous_link = None
             if from_value + size < response.hits.total.value:
@@ -383,9 +412,18 @@ class SearchAllView(APIView, LimitOffsetPagination):
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
             search = search.extra(size=size, from_=from_value, track_total_hits=True)
+            for field in ["docs_prescriptions", "docs_solutions", "docs_complaints"]:
+                search = search.highlight(field, fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+                                          post_tags='</b>')
             response = search.execute()
             results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
+            for hit, serialized_data in zip(results, serializer.data):
+                highlights_dict = {}
+                for field in ["docs_prescriptions", "docs_solutions", "docs_complaints"]:
+                    if 'highlight' in hit.meta and field in hit.meta.highlight:
+                        highlights_dict[field] = hit.meta.highlight[field][0]
+                serialized_data['highlights'] = highlights_dict
             next_link = None
             previous_link = None
             if from_value + size < response.hits.total.value:
@@ -442,12 +480,20 @@ class SearchAllView_70(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
+            for field in ["docs_prescriptions", "docs_solutions", "docs_complaints"]:
+                search = search.highlight(field, fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+                                          post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
             search = search.extra(size=size, from_=from_value, track_total_hits=True)
             response = search.execute()
             results = response.hits
             serializer = self.productinventory_serializer(results, many=True)
+            for hit, serialized_data in zip(results, serializer.data):
+                highlights_dict = {}
+                for field in ["docs_prescriptions", "docs_solutions", "docs_complaints"]:
+                    if 'highlight' in hit.meta and field in hit.meta.highlight:
+                        highlights_dict[field] = hit.meta.highlight[field][0]
             next_link = None
             previous_link = None
             if from_value + size < response.hits.total.value:
