@@ -55,7 +55,7 @@ class ComplaintFilter(filters.FilterSet):
         s = Search(using=client, index='complaints')
         s = s.query('match_phrase', docs_complaints=value)
         s = s.highlight('docs_complaints', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
-                        pre_tags='', post_tags='')
+                        pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
@@ -66,7 +66,6 @@ class ComplaintFilter(filters.FilterSet):
         complaints = queryset.filter(complaint_id__in=complaint_ids)
         for complaint in complaints:
             complaint.highlights = highlights_dict.get(complaint.complaint_id, [])
-
         return complaints
 
     def search_docs_complaints_2(self, queryset, name, value):
@@ -77,7 +76,7 @@ class ComplaintFilter(filters.FilterSet):
             'slop': 2
         })
         s = s.highlight('docs_complaints', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
-                        pre_tags='', post_tags='')
+                        pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
@@ -88,7 +87,6 @@ class ComplaintFilter(filters.FilterSet):
         complaints = queryset.filter(complaint_id__in=complaint_ids)
         for complaint in complaints:
             complaint.highlights = highlights_dict.get(complaint.complaint_id, [])
-
         return complaints
 
     def search_docs_solutions(self, queryset, name, value):
@@ -96,7 +94,7 @@ class ComplaintFilter(filters.FilterSet):
         s = Search(using=client, index='solutions')
         s = s.query('match_phrase', docs_solutions=value)
         s = s.highlight('docs_solutions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
-                        pre_tags='', post_tags='')
+                        pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
@@ -118,7 +116,7 @@ class ComplaintFilter(filters.FilterSet):
             'slop': 2
         })
         s = s.highlight('docs_solutions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
-                        pre_tags='', post_tags='')
+                        pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
@@ -137,7 +135,7 @@ class ComplaintFilter(filters.FilterSet):
         s = Search(using=client, index='prescriptions')
         s = s.query('match_phrase', docs_prescriptions=value)
         s = s.highlight('docs_prescriptions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
-                        pre_tags='', post_tags='')
+                        pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
@@ -159,7 +157,7 @@ class ComplaintFilter(filters.FilterSet):
             'slop': 2
         })
         s = s.highlight('docs_prescriptions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
-                        pre_tags='', post_tags='')
+                        pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()
         complaint_ids = [hit.meta.id for hit in response.hits]
