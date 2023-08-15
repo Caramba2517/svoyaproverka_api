@@ -1,9 +1,11 @@
+import os
+
+import decouple
 import rest_framework.schemas.coreapi
 import svoyaproverka_api
 
 from pathlib import Path
 from decouple import config
-
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config("DJANGO_SECRET")
@@ -18,7 +20,7 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'rest_framework',
     'rest_framework_swagger',
-    
+
     'api',
     'drf_yasg',
     'django_filters',
@@ -31,8 +33,9 @@ SSL_PRIVATE_KEY = "/etc/nginx/ssl/key.key"
 
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'http://89.108.118.100:9200',
-        'timeout': 360
+        'hosts': config('ELASTIC_HOST'),
+        'timeout': 360,
+        'http_auth': (config('ELASTIC_USER'), config('ELASTIC_PASSWORD')),
     },
 }
 
@@ -72,10 +75,10 @@ WSGI_APPLICATION = 'svoyaproverka_api.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'svoya_proverka_api',
-        'USER': 'telegram',
-        'PASSWORD': 'Golova123',
-        'HOST': '89.108.111.14',
+        'NAME': decouple.config('DB_NAME'),
+        'USER': decouple.config('DB_USER'),
+        'PASSWORD': decouple.config('DB_PASSWORD'),
+        'HOST': decouple.config('DB_HOST'),
         'PORT': '5432',
     }
 }
@@ -128,6 +131,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+
+STATICFILES_DIRS = [
+    BASE_DIR / 'static_custom',
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
