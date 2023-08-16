@@ -36,6 +36,8 @@ ELASTICSEARCH_DSL = {
         'hosts': config('ELASTIC_HOST'),
         'timeout': 360,
         'http_auth': (config('ELASTIC_USER'), config('ELASTIC_PASSWORD')),
+        'use_ssl': True,
+        'verify_certs': False,
     },
 }
 
@@ -77,7 +79,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': decouple.config('DB_NAME'),
         'USER': decouple.config('DB_USER'),
-        'PASSWORD': decouple.config('DB_PASSWORD'),
+        'PASSWORD': decouple.config('DB_PASS'),
         'HOST': decouple.config('DB_HOST'),
         'PORT': '5432',
     }

@@ -20,7 +20,7 @@ from urllib.parse import quote_plus, urlencode
 
 
 def redirect_to_api_v1(request):
-    return redirect('https://89.108.111.14:8000/api/v2/complaints/?limit=10')
+    return redirect('http://svoyaproverka.ru/api/v2/complaints/?limit=10')
 
 
 def serve_file(request, file_path):
@@ -82,7 +82,7 @@ class SearchComplaintsView(APIView):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
-            search = search.highlight('docs_complaints', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+            search = search.highlight('docs_complaints', fragment_size=400, number_of_fragments=1, pre_tags='<b>',
                                       post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
@@ -137,7 +137,7 @@ class SearchComplaintsView_70(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
-            search = search.highlight('docs_complaints', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+            search = search.highlight('docs_complaints', fragment_size=400, number_of_fragments=1, pre_tags='<b>',
                                       post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
@@ -191,7 +191,7 @@ class SearchSolutionsView(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
-            search = search.highlight('docs_solutions', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+            search = search.highlight('docs_solutions', fragment_size=400, number_of_fragments=1, pre_tags='<b>',
                                       post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
@@ -246,7 +246,7 @@ class SearchSolutionsView_70(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
-            search = search.highlight('docs_solutions', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+            search = search.highlight('docs_solutions', fragment_size=400, number_of_fragments=1, pre_tags='<b>',
                                       post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
@@ -300,7 +300,7 @@ class SearchPrescriptionsView(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
-            search = search.highlight('docs_prescriptions', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+            search = search.highlight('docs_prescriptions', fragment_size=400, number_of_fragments=1, pre_tags='<b>',
                                       post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
@@ -355,7 +355,7 @@ class SearchPrescriptionsView_70(APIView, LimitOffsetPagination):
                 minimum_should_match=1,
             )
             search = self.search_document.search().query(q)
-            search = search.highlight('docs_prescriptions', fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+            search = search.highlight('docs_prescriptions', fragment_size=400, number_of_fragments=1, pre_tags='<b>',
                                       post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))
@@ -481,7 +481,7 @@ class SearchAllView_70(APIView, LimitOffsetPagination):
             )
             search = self.search_document.search().query(q)
             for field in ["docs_prescriptions", "docs_solutions", "docs_complaints"]:
-                search = search.highlight(field, fragment_size=200, number_of_fragments=1, pre_tags='<b>',
+                search = search.highlight(field, fragment_size=400, number_of_fragments=1, pre_tags='<b>',
                                           post_tags='</b>')
             size = int(request.GET.get('size', 10))
             from_value = int(request.GET.get('from', 0))

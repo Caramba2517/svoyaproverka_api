@@ -54,7 +54,7 @@ class ComplaintFilter(filters.FilterSet):
         client = Elasticsearch(timeout=60)
         s = Search(using=client, index='complaints')
         s = s.query('match_phrase', docs_complaints=value)
-        s = s.highlight('docs_complaints', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+        s = s.highlight('docs_complaints', fragment_size=400, number_of_fragments=1, max_analyzed_offset=1000000,
                         pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()
@@ -75,7 +75,7 @@ class ComplaintFilter(filters.FilterSet):
             'query': value,
             'slop': 2
         })
-        s = s.highlight('docs_complaints', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+        s = s.highlight('docs_complaints', fragment_size=400, number_of_fragments=1, max_analyzed_offset=1000000,
                         pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()
@@ -93,7 +93,7 @@ class ComplaintFilter(filters.FilterSet):
         client = Elasticsearch(timeout=60)
         s = Search(using=client, index='solutions')
         s = s.query('match_phrase', docs_solutions=value)
-        s = s.highlight('docs_solutions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+        s = s.highlight('docs_solutions', fragment_size=400, number_of_fragments=1, max_analyzed_offset=1000000,
                         pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()
@@ -134,7 +134,7 @@ class ComplaintFilter(filters.FilterSet):
         client = Elasticsearch(timeout=60)
         s = Search(using=client, index='prescriptions')
         s = s.query('match_phrase', docs_prescriptions=value)
-        s = s.highlight('docs_prescriptions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+        s = s.highlight('docs_prescriptions', fragment_size=400, number_of_fragments=1, max_analyzed_offset=1000000,
                         pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()
@@ -156,7 +156,7 @@ class ComplaintFilter(filters.FilterSet):
             'query': value,
             'slop': 2
         })
-        s = s.highlight('docs_prescriptions', fragment_size=200, number_of_fragments=1, max_analyzed_offset=1000000,
+        s = s.highlight('docs_prescriptions', fragment_size=400, number_of_fragments=1, max_analyzed_offset=1000000,
                         pre_tags='<b>', post_tags='</b>')
         s = s[0:10000]
         response = s.execute()

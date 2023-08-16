@@ -15,7 +15,6 @@ class CustomDateTimeField(serializers.ReadOnlyField):
 class ComplaintSerializer(serializers.ModelSerializer):
     list_docs = serializers.SerializerMethodField()
     highlights = serializers.SerializerMethodField()
-
     class Meta:
         model = Complaint
         fields = [
@@ -25,7 +24,7 @@ class ComplaintSerializer(serializers.ModelSerializer):
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
-        site_url = "https://svoyaproverka.ru/file"
+        site_url = "http://svoyaproverka.ru/file"
         if obj.list_docs == empty_folder:
             return empty_folder
         docs_str = obj.list_docs[:-1]
@@ -37,7 +36,6 @@ class ComplaintSerializer(serializers.ModelSerializer):
             return obj.highlights
         except:
             return "Нет запроса"
-
 
 class ComplaintsSearchSerializer(serializers.ModelSerializer):
     list_docs = serializers.SerializerMethodField()
@@ -51,7 +49,7 @@ class ComplaintsSearchSerializer(serializers.ModelSerializer):
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
-        site_url = "https://svoyaproverka.ru/file"
+        site_url = "http://svoyaproverka.ru/file"
         if obj.list_docs == empty_folder:
             return empty_folder
         docs_str = obj.list_docs[:-1]
@@ -71,7 +69,7 @@ class SolutionsSearchSerializer(serializers.ModelSerializer):
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
-        site_url = "https://svoyaproverka.ru/file"
+        site_url = "http://svoyaproverka.ru/file"
         if obj.list_docs == empty_folder:
             return empty_folder
         docs_str = obj.list_docs[:-1]
@@ -91,7 +89,7 @@ class PrescriptionsSearchSerializer(serializers.ModelSerializer):
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
-        site_url = "https://svoyaproverka.ru/file"
+        site_url = "http://svoyaproverka.ru/file"
         if obj.list_docs == empty_folder:
             return empty_folder
         docs_str = obj.list_docs[:-1]
@@ -111,7 +109,7 @@ class AllSearch(serializers.ModelSerializer):
 
     def get_list_docs(self, obj):
         empty_folder = 'Нет файлов'
-        site_url = "https://svoyaproverka.ru/file"
+        site_url = "http://svoyaproverka.ru/file"
         if obj.list_docs == empty_folder:
             return empty_folder
         docs_str = obj.list_docs[:-1]

@@ -7,6 +7,6 @@ urlpatterns = [
     path('', redirect_to_api_v1),
     path('api/v2/', include('api.urls')),
     path('file/<path:file_path>/', serve_file, name='serve_file')
- ]
+]
 
 urlpatterns += swagger_urls
